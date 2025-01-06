@@ -1,0 +1,178 @@
+{% load custom_filters %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualisation Générale</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/3.1.0/css/adminlte.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css_app/style3.css' %}">
+    <link rel="stylesheet" href="{% static 'css_app/bootstrap.css' %}">
+    <style>
+        .sidebar-primary .nav-sidebar>.nav-item>.nav-link.active {
+            background-color: #99c6f7;
+            color: white;
+        }
+    </style>
+</head>
+<body class="hold-transition sidebar-mini">
+    <div class="wrapper">
+        <!-- Navbar -->
+        <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" data-widget="pushmenu" href="#"><i class="fas fa-bars"></i></a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Sidebar -->
+        <aside class="main-sidebar sidebar-primary elevation-4">
+            <a href="#" class="brand-link text-center">
+                <img src="{% static 'img/logo.png' %}" alt="" class="logo">
+            </a>
+            <div class="sidebar">
+                <nav class="mt-2">
+                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                        <li class="nav-item">
+                            <a href="{% url 'excel' %}" class="nav-link">
+                                <i class="nav-icon fas fa-file-download"></i>
+                                <p>Télécharger le fichier</p>
+                            </a>
+                        </li>
+                        
+                        <li class="nav-item">
+                            <a href="{% url 'visualiser_par_donnee' %}" class="nav-link active">
+                                <i class="nav-icon fas fa-chart-bar"></i>
+                                <p>Visualiser par données</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'lois_de_probabilite' %}" class="nav-link">
+                                <i class="nav-icon fas fa-chart-bar"></i>
+                                <p>Lois de probabilité</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'test_traitement' %}" class="nav-link">
+                                <i class="nav-icon fas fa-chart-bar"></i>
+                                <p>Tests</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link mt-5">
+                                <i class="nav-icon fas fa-users"></i>
+                                <p>Déconnexion</p>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- Content Wrapper -->
+        <div class="content-wrapper">
+            <div class="content-header">
+                <div class="container-fluid">
+                    <div class="row mb-2">
+                        <div class="col-6">
+                            <h3 class="m-0">Visualisation des données</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <section class="content">
+                <div class="container-fluid">
+                    <div class="card">
+                        <div class="card-body">
+                            
+                            <!-- Message d'erreur -->
+                            {% if error_message %}
+                                <div class="alert alert-danger">{{ error_message }}</div>
+                            {% endif %}
+
+                            <!-- Formulaire de filtrage -->
+                            {% if colonnes_disponibles %}
+                            <form method="GET">
+                                <div class="form-group">
+                                    <label for="colonne">Sélectionner une colonne pour le filtrage</label>
+                                    <select name="colonne" id="colonne" class="form-control">
+                                        <option value="">-- Toutes les colonnes --</option>
+                                        {% for colonne in colonnes_disponibles %}
+                                            <option value="{{ colonne }}" {% if colonne == colonne_filtrée %} selected {% endif %}>
+                                                {{ colonne }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="valeur">Valeur à filtrer</label>
+                                    <input type="text" name="valeur" id="valeur" class="form-control" value="{{ valeur_filtrée }}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="type_chart">Type de graphique</label>
+                                    <select name="type_chart" id="type_chart" class="form-control">
+                                        <option value="Barplot" {% if type_chart == "Barplot" %}selected{% endif %}>Barplot</option>
+                                        <option value="histogram" {% if type_chart == "histogram" %}selected{% endif %}>Histogram</option>
+                                        <option value="piechart" {% if type_chart == "piechart" %}selected{% endif %}>Piechart</option>
+                                        <option value="scatterplot" {% if type_chart == "scatterplot" %}selected{% endif %}>Scatterplot</option>
+                                        <option value="heatmap" {% if type_chart == "heatmap" %}selected{% endif %}>Heatmap</option>
+                                        <option value="lineplot" {% if type_chart == "lineplot" %}selected{% endif %}>Lineplot</option>
+                                        <option value="boxplot" {% if type_chart == "boxplot" %}selected{% endif %}>Boxplot</option>
+                                        <option value="violinplot" {% if type_chart == "violinplot" %}selected{% endif %}>Violinplot</option>
+                                        
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="col1">Colonne X</label>
+                                    <select name="col1" id="col1" class="form-control">
+                                        <option value="">-- Sélectionnez --</option>
+                                        {% for colonne in colonnes_disponibles %}
+                                            <option value="{{ colonne }}" {% if colonne == col1 %}selected{% endif %}>{{ colonne }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="col2">Colonne Y</label>
+                                    <select name="col2" id="col2" class="form-control">
+                                        <option value="">-- Sélectionnez --</option>
+                                        {% for colonne in colonnes_disponibles %}
+                                            <option value="{{ colonne }}" {% if colonne == col2 %}selected{% endif %}>{{ colonne }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Visualiser</button>
+                            </form>
+                            {% endif %}
+                            {% if graph_json %}
+                                <div id="graph"></div>
+                                <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+                                <script>
+                                    var graphData = {{ graph_json|safe }};
+                                    Plotly.newPlot('graph', graphData.data, graphData.layout);
+                                </script>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Footer -->
+        <footer class="main-footer">
+            <div class="text-center">
+                <span class="text-muted">
+                    Copyright &copy; <script>document.write(new Date().getFullYear())</script>
+                </span>
+            </div>
+        </footer>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.0/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/3.1.0/js/adminlte.min.js"></script>
+</body>
+</html>

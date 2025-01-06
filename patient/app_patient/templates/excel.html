@@ -1,0 +1,144 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Données</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/3.1.0/css/adminlte.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css_app/style3.css' %}">
+    <link rel="stylesheet" href="{% static 'bootstrap.css' %}">
+    <link rel="canonical" href="https://getbootstrap.com/docs/5.0">
+    <style>
+        .sidebar-primary .nav-sidebar>.nav-item>.nav-link.active {
+            background-color: #99c6f7;
+            color: white;
+        }
+    </style>
+</head>
+<body class="hold-transition sidebar-mini">
+    <div class="wrapper">
+        <!-- Navbar -->
+        <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" data-widget="pushmenu" href="#"><i class="fas fa-bars"></i></a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Sidebar -->
+        <aside class="main-sidebar sidebar-primary elevation-4">
+            <a href="#" class="brand-link text-center">
+                <img src="{% static 'img/logo.png' %}" alt="" class="logo">
+            </a>
+            <div class="sidebar">
+                <nav class="mt-2">
+                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                        <li class="nav-item">
+                            <a href="{% url 'excel' %}" class="nav-link active">
+                                <i class="nav-icon fas fa-file-download"></i>
+                                <p>Télécharger le fichier</p>
+                            </a>
+                        </li>
+                       
+                        <li class="nav-item">
+                            <a href="{% url 'visualiser_par_donnee' %}" class="nav-link">
+                                <i class="nav-icon fas fa-chart-bar"></i>
+                                <p>Visualiser par données</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'lois_de_probabilite' %}" class="nav-link">
+                                <i class="nav-icon fas fa-chart-bar"></i>
+                                <p>Lois de probabilité</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'test_inferentiel' %}" class="nav-link">
+                                <i class="nav-icon fas fa-chart-bar"></i>
+                                <p>Tests</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link mt-5">
+                                <i class="nav-icon fas fa-sign-out-alt"></i>
+                                <p>Déconnexion</p>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="content-wrapper">
+            <div class="content-header">
+                <div class="container-fluid">
+                    <div class="row mb-2">
+                        <div class="col-6">
+                            <h3 class="m-0">Gestion des Données</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <section class="content">
+                <div class="container-fluid">
+                    <div class="card">
+                        <div class="card-body">
+                            <h1 class="mb-4">Importer un fichier Excel</h1>
+
+                            <!-- Affichage des messages d'erreur -->
+                            {% if error_message %}
+                                <div class="alert alert-danger">
+                                    {{ error_message }}
+                                </div>
+                            {% endif %}
+                    
+                            <!-- Formulaire de téléchargement -->
+                            <form method="POST" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    {{ form.file.label_tag }}
+                                    {{ form.file }}
+                                    {% if form.file.errors %}
+                                        <div class="text-danger">{{ form.file.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                <button type="submit" class="btn btn-primary">Télécharger</button>
+                            </form>
+                    
+                            <!-- Affichage des colonnes du fichier -->
+                            {% if df_html %}
+                                <div class="mt-5">
+                                    <h3>Aperçu des données</h3>
+                                    {{ df_html|safe }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            
+
+        </div>
+
+        
+        <!-- Footer -->
+        <footer class="main-footer">
+            <div class="text-center">
+                <span class="text-muted">
+                    Copyright &copy; <script>document.write(new Date().getFullYear())</script>
+                </span>
+            </div>
+        </footer>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.0/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/3.1.0/js/adminlte.min.js"></script>
+</body>
+</html>

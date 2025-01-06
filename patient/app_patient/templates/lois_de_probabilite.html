@@ -1,0 +1,211 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulation des Lois de Probabilité</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/3.1.0/css/adminlte.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'bootstrap.css' %}">
+    <link rel="canonical" href="https://getbootstrap.com/docs/5.0">
+    <style>
+        .sidebar-primary .nav-sidebar>.nav-item>.nav-link.active {
+            background-color: #99c6f7;
+            color: white;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body class="hold-transition sidebar-mini">
+    <div class="wrapper">
+        <!-- Navbar -->
+        <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" data-widget="pushmenu" href="#"><i class="fas fa-bars"></i></a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Sidebar -->
+        <aside class="main-sidebar sidebar-primary elevation-4">
+            <a href="#" class="brand-link text-center">
+                <img src="" alt="" class="logo">
+            </a>
+            <div class="sidebar">
+                <nav class="mt-2">
+                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                        <li class="nav-item">
+                            <a href="{% url 'excel' %}" class="nav-link">
+                                <i class="nav-icon fas fa-file-download"></i>
+                                <p>Télécharger le fichier</p>
+                            </a>
+                        </li>
+                        
+                        <li class="nav-item">
+                            <a href="{% url 'visualiser_par_donnee' %}" class="nav-link">
+                                <i class="nav-icon fas fa-chart-bar"></i>
+                                <p>Visualiser par données</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'lois_de_probabilite' %}" class="nav-link active">
+                                <i class="nav-icon fas fa-chart-bar"></i>
+                                <p>Lois de probabilité</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'test_traitement' %}" class="nav-link">
+                                <i class="nav-icon fas fa-chart-bar"></i>
+                                <p>Tests</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link mt-5">
+                                <i class="nav-icon fas fa-sign-out-alt"></i>
+                                <p>Déconnexion</p>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="content-wrapper">
+            <div class="content-header">
+                <div class="container-fluid">
+                    <div class="row mb-2">
+                        <div class="col-6">
+                            <h3 class="m-0">Simulation des Lois de Probabilité</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <section class="content">
+                <div class="container-fluid">
+                    <div class="card">
+                        <div class="card-body">
+                            <form method="POST" action="{% url 'lois_de_probabilite' %}" id="form-simulation">
+                                {% csrf_token %}
+                                
+                                <div class="form-group">
+                                    <label for="loi">Choisissez la loi de probabilité</label>
+                                    <select class="form-control" id="loi" name="loi" required>
+                                        <option value="">Sélectionner une loi</option>
+                                        <option value="bernoulli" {% if loi == 'bernoulli' %}selected{% endif %}>Bernoulli</option>
+                                        <option value="binomiale" {% if loi == 'binomiale' %}selected{% endif %}>Binomiale</option>
+                                        <option value="uniforme" {% if loi == 'uniforme' %}selected{% endif %}>Uniforme</option>
+                                        <option value="poisson" {% if loi == 'poisson' %}selected{% endif %}>Poisson</option>
+                                        <option value="exponentielle" {% if loi == 'exponentielle' %}selected{% endif %}>Exponentielle</option>
+                                        <option value="normale" {% if loi == 'normale' %}selected{% endif %}>Normale continue</option>
+                                    </select>
+                                </div>
+
+                                
+
+                               {% if loi %}
+                                {% if loi == 'bernoulli' %}
+                                <div class="form-group">
+                                    <label for="probabilite">Probabilité de succès (p)</label>
+                                    <input type="number" class="form-control" id="probabilite" name="probabilite" step="0.01" min="0" max="1" required>
+                                    <label for="n">Nombre d'événements</label>
+                                    <input type="number" class="form-control" id="n" name="n" min="1" required>
+                                </div>
+                                {% elif loi == 'binomiale' %}
+                                <div class="form-group">
+                                    <label for="n_binomiale">Nombre d'essais (n)</label>
+                                    <input type="number" class="form-control" id="n_binomiale" name="n_binomiale" min="1" required>
+                                    <label for="p_binomiale">Probabilité de succès (p)</label>
+                                    <input type="number" class="form-control" id="p_binomiale" name="p_binomiale" step="0.01" min="0" max="1" required>
+                                    <label for="lambda_poisson">Frequence </label>
+                                    <input type="number" class="form-control" id="k" name="k"  required>
+                                </div>
+                                {% elif loi == 'uniforme' %}
+                                <div class="form-group">
+                                    <label for="a_uniforme">Min (a)</label>
+                                    <input type="number" class="form-control" id="a_uniforme" name="a_uniforme" required>
+                                    <label for="b_uniforme">Max (b)</label>
+                                    <input type="number" class="form-control" id="b_uniforme" name="b_uniforme" required>
+                                </div>
+                                {% elif loi == 'poisson' %}
+                                <div class="form-group">
+                                    <label for="lambda_poisson">Taux d'événements (λ)</label>
+                                    <input type="number" class="form-control" id="lambda_poisson" name="lambda_poisson" step="0.01" min="0" required>
+                                    <label for="lambda_poisson">Frequence </label>
+                                    <input type="number" class="form-control" id="k" name="k"  required>
+                                </div>
+                                {% elif loi == 'exponentielle' %}
+                                <div class="form-group">
+                                    <label for="lambda_exponentielle">Taux d'événements (λ)</label>
+                                    <input type="number" class="form-control" id="lambda_exponentielle" name="lambda_exponentielle" step="0.01" min="0" required>
+                                    <label for="lambda_poisson">Frequence </label>
+                                    <input type="number" class="form-control" id="k" name="k"  required>
+                                </div>
+                                {% elif loi == 'normale' %}
+                                <div class="form-group">
+                                    <label for="moyenne">Moyenne (μ)</label>
+                                    <input type="number" class="form-control" id="moyenne" name="moyenne" step="0.01" required>
+                                    <label for="ecart_type">Ecart-type (σ)</label>
+                                    <input type="number" class="form-control" id="ecart_type" name="ecart_type" step="0.01" min="0" required>
+                                    <label for="lambda_poisson">Frequence </label>
+                                    <input type="number" class="form-control" id="k" name="k"  required>
+                                </div>
+                                {% endif %}
+                                <button type="submit" class="btn btn-success mt-3">Calculer</button>
+                            {% else %}
+                                <button type="submit" class="btn btn-primary mt-3" name="appliquer">Appliquer</button>
+                            {% endif %}
+
+
+                                
+
+                                <!-- Calcul -->
+                                
+                            </form>
+
+                            <hr>
+
+                            {% if exact_value %}
+                                <p><strong>Probabilité théorique :</strong> {{ exact_value }}</p>
+                            {% endif %}
+                            {% if result %}
+                                <p><strong>Échantillons simulés :</strong> {{ result }}</p>
+                            {% endif %}
+                            {% if errors %}
+                                <p class="error">{{ errors }}</p>
+                            {% endif %}
+
+                            {% if plot_data %}
+                                <div class="mt-4">
+                                    <h4>Graphique de la loi de probabilité</h4>
+                                    <img src="data:image/png;base64,{{ plot_data }}" alt="Graphique" class="img-fluid">
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Footer -->
+        <footer class="main-footer">
+            <div class="text-center">
+                <span class="text-muted">
+                    Copyright &copy; <script>document.write(new Date().getFullYear())</script>
+                </span>
+            </div>
+        </footer>
+    </div>
+</body>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.0/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/3.1.0/js/adminlte.min.js"></script>
+</body>
+</html>

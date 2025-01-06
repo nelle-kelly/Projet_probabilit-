@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestion des Patients</title>
+    <title>Gestion des Données</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/3.1.0/css/adminlte.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link rel="stylesheet" href="{% static 'css_app/style3.css' %}">
@@ -28,6 +28,7 @@
             </ul>
         </nav>
 
+        <!-- Sidebar -->
         <aside class="main-sidebar sidebar-primary elevation-4">
             <a href="#" class="brand-link text-center">
                 <img src="{% static 'img/logo.png' %}" alt="" class="logo">
@@ -36,32 +37,33 @@
                 <nav class="mt-2">
                     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                         <li class="nav-item">
-                            <a href="{% url 'base' %}" class="nav-link">
-                                <i class="nav-icon fas fa-th"></i>
-                                <p>Accueil</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{% url 'index' %}" class="nav-link">
-                                <i class="nav-icon fas fa-user-plus"></i>
-                                <p>Ajouter un patient</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{% url 'visualiser_par_maladie' %}" class="nav-link">
-                                <i class="nav-icon fas fa-edit"></i>
-                                <p>Manage patent</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{% url 'telecharger_excel' %}" class="nav-link">
+                            <a href="{% url 'excel' %}" class="nav-link">
                                 <i class="nav-icon fas fa-file-download"></i>
-                                <p>Télécharger la liste</p>
+                                <p>Télécharger le fichier</p>
+                            </a>
+                        </li>
+                        
+                        <li class="nav-item">
+                            <a href="{% url 'visualiser_par_donnee' %}" class="nav-link">
+                                <i class="nav-icon fas fa-chart-bar"></i>
+                                <p>Visualiser par données</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'lois_de_probabilite' %}" class="nav-link">
+                                <i class="nav-icon fas fa-chart-bar"></i>
+                                <p>Lois de probabilité</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'test_traitement' %}" class="nav-link">
+                                <i class="nav-icon fas fa-chart-bar"></i>
+                                <p>Tests</p>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="#" class="nav-link mt-5">
-                                <i class="nav-icon fas fa-users"></i>
+                                <i class="nav-icon fas fa-sign-out-alt"></i>
                                 <p>Déconnexion</p>
                             </a>
                         </li>
@@ -70,12 +72,13 @@
             </div>
         </aside>
 
+        <!-- Main Content -->
         <div class="content-wrapper">
             <div class="content-header">
                 <div class="container-fluid">
                     <div class="row mb-2">
                         <div class="col-6">
-                            <h3 class="m-0">Liste des Patients</h3>
+                            <h3 class="m-0">Gestion des Données</h3>
                         </div>
                     </div>
                 </div>
@@ -85,67 +88,18 @@
                 <div class="container-fluid">
                     <div class="card">
                         <div class="card-body">
-                            <!-- Affichage des messages d'erreur ou de succès -->
-                            {% if error_message %}
-                                <div class="alert alert-danger">{{ error_message }}</div>
-                            {% endif %}
-                            {% if success_message %}
-                                <div class="alert alert-success">{{ success_message }}</div>
-                            {% endif %}
-                            
-                            <!-- Formulaire de téléchargement du fichier -->
-                            <form method="POST" enctype="multipart/form-data">
-                                {% csrf_token %}
-                                <div class="form-group">
-                                    <label class="form-label"  for="file">Télécharger un fichier Excel</label>
-                                    <input class="form-control" type="file" name="file" id="file" class="form-control">
-                                </div>
-                                <button type="submit" class="btn btn-primary">Télécharger le fichier</button>
-                            </form>
-
-                            <a href="{% url 'telecharger_excel' %}" class="btn btn-primary mb-5 mt-3">
-                                Télécharger la liste complète
-                            </a>
-                            <table class="table table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>#</th>
-                                        <th>Nom</th>
-                                        <th>Prénom</th>
-                                        <th>Téléphone</th>
-                                        <th>Pathologie</th>
-                                        <th>Taille</th>
-                                        <th>Poids</th>
-                                        <th>Date première visite</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% if patient %}
-                                        {% for pat in patient %}
-                                            <tr>
-                                                <td>{{ forloop.counter }}</td>
-                                                <td>{{ pat.Nom }}</td>
-                                                <td>{{ pat.Prénom }}</td>
-                                                <td>{{ pat.Téléphone }}</td>
-                                                <td>{{ pat.Pathologie }}</td>
-                                                <td>{{ pat.Taille }}</td>
-                                                <td>{{ pat.Poids }}</td>
-                                                <td>{{ pat.Date_première_visite }}</td>
-                                            </tr>
-                                        {% endfor %}
-                                    {% else %}
-                                        <tr>
-                                            <td colspan="8" class="text-center">Aucun patient trouvé</td>
-                                        </tr>
-                                    {% endif %}
-                                </tbody>
-                            </table>
+                         
                         </div>
                     </div>
                 </div>
             </section>
+            
+            
+
         </div>
 
+        
+        <!-- Footer -->
         <footer class="main-footer">
             <div class="text-center">
                 <span class="text-muted">
