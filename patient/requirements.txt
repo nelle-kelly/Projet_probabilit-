@@ -1,0 +1,10 @@
+Django
+pandas
+numpy
+matplotlib
+seaborn
+plotly
+scipy
+statsmodels
+openpyxl
+requests
